@@ -1,7 +1,7 @@
-# Image de base
+# Utiliser l'image de base node:lts-alpine
 FROM node:lts-alpine
 
-# Repertoire de travail dans le conteneur
+# Definir le repertoire de travail dans le conteneur
 WORKDIR /app
 
 # Copier les fichiers package*.json
@@ -22,5 +22,5 @@ RUN npm install -g serve
 # Exposer le port 3000
 EXPOSE 3000
 
-# Servir les fichiers de build
+# Demarrer le serveur pour servir les fichiers de build
 CMD ["serve", "-s", "dist", "-l", "3000"]

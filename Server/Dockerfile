@@ -1,7 +1,7 @@
-# Image de base
+# Utiliser l'image de base node:lts-alpine
 FROM node:lts-alpine
 
-# Repertoire de travail dans le conteneur
+# Definir le repertoire de travail dans le conteneur
 WORKDIR /app
 
 # Copier les fichiers package*.json
@@ -12,9 +12,6 @@ RUN npm install
 
 # Copier le reste des fichiers du serveur
 COPY . .
-
-# Variable d'environnement (la vraie valeur est definie dans docker-compose.yml)
-ENV MONGO_URI=mongodb://mongodb:27017/mern
 
 # Exposer le port 9000
 EXPOSE 9000

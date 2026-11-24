@@ -6,8 +6,7 @@ services:
       - mern-network
 
   server:
-    build: ./Server
-    image: mern-server
+    build: ./server
     container_name: server
     ports:
       - "9000:9000"
@@ -19,8 +18,7 @@ services:
       - MONGO_URI=mongodb://mongodb:27017/mern
 
   client:
-    build: ./Client
-    image: mern-client
+    build: ./client
     container_name: client
     ports:
       - "3000:3000"

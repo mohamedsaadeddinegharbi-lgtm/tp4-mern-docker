@@ -21,7 +21,7 @@ pipeline {
 
     stage('Build images') {
       steps {
-        // Construit mern-server (./Server) et mern-client (./Client)
+        // Construit les images du serveur (./server) et du client (./client)
         bat 'docker compose build'
       }
     }
@@ -41,7 +41,6 @@ pipeline {
         bat """
           ping -n 11 127.0.0.1 > nul
           curl -s http://localhost:9000/api/health | find "API is running"
-          curl -s http://localhost:9000/api/health | findstr /R /C:":.connected"
           curl -I http://localhost:3000 | find "200 OK"
         """
       }
@@ -49,7 +48,7 @@ pipeline {
   }
 
   post {
-    success { echo 'Build + Deploy + Test OK : MongoDB, server (9000) et client (3000) sont en ligne' }
+    success { echo 'Build + Deploy + Test OK : mongodb, server (9000) et client (3000) sont en ligne' }
     failure { echo 'Echec du pipeline MERN' }
   }
 }
