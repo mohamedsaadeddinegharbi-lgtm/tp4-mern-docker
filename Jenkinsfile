@@ -5,6 +5,7 @@ pipeline {
   environment {
     // Docker Desktop est installe pour l'utilisateur : on ajoute son dossier bin au PATH
     PATH = "C:/Users/im/AppData/Local/Programs/DockerDesktop/resources/bin;${env.PATH}"
+    DOCKERHUB_USER = 'hamagh04'
   }
 
   stages {
@@ -21,8 +22,8 @@ pipeline {
 
     stage('Build images') {
       steps {
-        // Construit les images du serveur (./server) et du client (./client)
-        bat 'docker compose build'
+        bat 'docker build -t mern-server ./server'
+        bat 'docker build -t mern-client ./client'
       }
     }
 
@@ -30,7 +31,7 @@ pipeline {
       steps {
         bat """
           docker rm -f mongodb server client 2>nul || ver > nul
-          docker compose up -d
+          docker compose up -d --build
           docker compose ps
         """
       }
@@ -45,10 +46,26 @@ pipeline {
         """
       }
     }
+
+    stage('Push (Docker Hub)') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                                          usernameVariable: 'USER',
+                                          passwordVariable: 'PASS')]) {
+          bat """
+            echo %PASS%| docker login -u %USER% --password-stdin || exit /b 1
+            docker tag mern-server %DOCKERHUB_USER%/mern-server:latest
+            docker tag mern-client %DOCKERHUB_USER%/mern-client:latest
+            docker push %DOCKERHUB_USER%/mern-server:latest
+            docker push %DOCKERHUB_USER%/mern-client:latest
+          """
+        }
+      }
+    }
   }
 
   post {
-    success { echo 'Build + Deploy + Test OK : mongodb, server (9000) et client (3000) sont en ligne' }
+    success { echo 'Build + Deploy + Test + Push OK : mongodb, server (9000) et client (3000) sont en ligne' }
     failure { echo 'Echec du pipeline MERN' }
   }
 }
